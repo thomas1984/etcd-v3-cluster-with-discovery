@@ -1,0 +1,33 @@
+#docker-compose 3.5版本后才增加网络别名，之前的版本网络别名程序自己生成，可以通过
+#网络名字docker networks ls查看
+version: "3.5"
+networks:
+  ect_bridge:
+    name: ect_bridge
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 172.18.0.0/16
+
+services:
+  discovery.store:
+    image: gcr.io/google-containers/etcd:3.2.26
+    networks:
+      ect_bridge:
+        ipv4_address: '172.18.0.120'
+    #ports 2379是读写值端口 2380是广告通知端口
+    ports:
+      - "2380:2380"
+      - "2379:2379"
+    hostname: discovery.store
+    #挂载etcd数据存储
+    volumes:
+      - /media/thomas/Data/ETCD_DATA/discovery:/etcd-data
+    command: >-
+      /usr/local/bin/etcd
+      -name discovery.store
+      -data-dir /etcd-data
+      -initial-advertise-peer-urls http://172.18.0.120:2380
+      -listen-peer-urls http://0.0.0.0:2380
+      -advertise-client-urls http://172.18.0.120:2379
+      -listen-client-urls http://0.0.0.0:2379

@@ -1,0 +1,30 @@
+#该docker构成文件处理etcd discovery文件
+#使用前面存储cluste令牌的网络（已经存在网络）
+version: "3.5"
+networks:
+  etcd-discovery:
+    external:
+      name: ect_bridge
+
+services:
+  etcd-discovery:
+    #由于hub.docker镜像比较旧，所以用官网最新源码通过Dockerfile编译，源码地址/go/src/github.com/coreos/discovery.etcd.io
+    image: thomas.discovery.etcd.io:v1
+    #配置自己的静态地址
+    networks:
+      etcd-discovery:
+        ipv4_address: 172.18.0.121
+    #绑定HOST存储cluster key的地址
+    extra_hosts:
+      - "discovery.store:172.18.0.120"
+    ports:
+      - "8087:8087"
+    hostname: etcd-discovery
+    #etcd discovery程序不在/user/local/bin下面
+    command: >-
+       discovery.etcd.io
+       --etcd http://discovery.store:2379
+       --host http://172.18.0.121:8087
+##通过discovery的8087端口请求new方法获取token，然后要将该token写入到etcd token存储（即discovery.store中）
+#curl -X PUT http://172.18.0.120:2379/v2/keys/discovery/${token}/_config/size -d value=3
+#需要集群的节点通过请求GET http://172.18.0.120:2379/v2/keys/discovery/${token} 获取其他节点数
