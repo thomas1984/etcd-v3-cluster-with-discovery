@@ -1,0 +1,79 @@
+#该docker构成文件处理etcd discovery文件
+#使用前面存储cluste令牌的网络（已经存在网络）
+#注意token一旦被使用，将减少token使用次数
+#etcd集群节点数必须是基数，当注册3个节点，在一个节点挂了的时候，程序依然可以读写
+
+version: "3.5"
+networks:
+  ect_bridge:
+    external: true
+
+services:
+  etcd0:
+    image: gcr.io/google-containers/etcd:3.2.26
+    extra_hosts:
+        - "discovery.store:172.18.0.120"
+    volumes:
+        - /media/thomas/Data/ETCD_DATA/etcd0:/etcd-data
+    #使用前面存储cluste令牌的网络（已经存在网络）
+    networks:
+      - ect_bridge
+    ports:
+      - "23800:2380"
+      - "23790:2379"
+    hostname: etcd0
+    command: >-
+      /usr/local/bin/etcd
+      --name etcd0
+      --data-dir /etcd-data
+      --initial-advertise-peer-urls http://etcd0:2380
+      --listen-peer-urls http://0.0.0.0:2380
+      --advertise-client-urls http://etcd0:2379
+      --listen-client-urls http://0.0.0.0:2379
+      --discovery http://172.18.0.120:2379/v2/keys/discovery/0862bee6660dd49267de18311d662ca7
+
+  etcd1:
+    image: gcr.io/google-containers/etcd:3.2.26
+    extra_hosts:
+        - "discovery.store:172.18.0.120"
+    volumes:
+        - /media/thomas/Data/ETCD_DATA/etcd1:/etcd-data
+    #使用前面存储cluste令牌的网络（已经存在网络）
+    networks:
+      - ect_bridge
+    ports:
+      - "23801:2380"
+      - "23791:2379"
+    hostname: etcd1
+    command: >-
+      /usr/local/bin/etcd
+      --name etcd1
+      --data-dir /etcd-data
+      --initial-advertise-peer-urls http://etcd1:2380
+      --listen-peer-urls http://0.0.0.0:2380
+      --advertise-client-urls http://etcd1:2379
+      --listen-client-urls http://0.0.0.0:2379
+      --discovery http://172.18.0.120:2379/v2/keys/discovery/0862bee6660dd49267de18311d662ca7
+
+  etcd2:
+    image: gcr.io/google-containers/etcd:3.2.26
+    extra_hosts:
+        - "discovery.store:172.18.0.120"
+    volumes:
+        - /media/thomas/Data/ETCD_DATA/etcd2:/etcd-data
+    #使用前面存储cluste令牌的网络（已经存在网络）
+    networks:
+      - ect_bridge
+    ports:
+      - "23802:2380"
+      - "23792:2379"
+    hostname: etcd2
+    command: >-
+      /usr/local/bin/etcd
+      --name etcd2
+      --data-dir /etcd-data
+      --initial-advertise-peer-urls http://etcd2:2380
+      --listen-peer-urls http://0.0.0.0:2380
+      --advertise-client-urls http://etcd2:2379
+      --listen-client-urls http://0.0.0.0:2379
+      --discovery http://172.18.0.120:2379/v2/keys/discovery/0862bee6660dd49267de18311d662ca7
