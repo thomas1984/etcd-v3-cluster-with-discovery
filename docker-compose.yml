@@ -2,7 +2,8 @@
 #使用前面存储cluste令牌的网络（已经存在网络）
 #注意token一旦被使用，将减少token使用次数
 #etcd集群节点数必须是基数，当注册3个节点，在一个节点挂了的时候，程序依然可以读写
-
+#curl 172.18.0.121:8087/new 产生的token放入下面的占位符中 dde7b72f340526cc6126effca6bcaf0c
+#curl -X PUT http://172.18.0.120:2379/v2/keys/discovery/${token}/_config/size -d value=3
 version: "3.5"
 networks:
   ect_bridge:
@@ -30,7 +31,7 @@ services:
       --listen-peer-urls http://0.0.0.0:2380
       --advertise-client-urls http://etcd0:2379
       --listen-client-urls http://0.0.0.0:2379
-      --discovery http://172.18.0.120:2379/v2/keys/discovery/0862bee6660dd49267de18311d662ca7
+      --discovery http://172.18.0.120:2379/v2/keys/discovery/dde7b72f340526cc6126effca6bcaf0c
 
   etcd1:
     image: gcr.io/google-containers/etcd:3.2.26
@@ -53,7 +54,7 @@ services:
       --listen-peer-urls http://0.0.0.0:2380
       --advertise-client-urls http://etcd1:2379
       --listen-client-urls http://0.0.0.0:2379
-      --discovery http://172.18.0.120:2379/v2/keys/discovery/0862bee6660dd49267de18311d662ca7
+      --discovery http://172.18.0.120:2379/v2/keys/discovery/dde7b72f340526cc6126effca6bcaf0c
 
   etcd2:
     image: gcr.io/google-containers/etcd:3.2.26
@@ -76,4 +77,4 @@ services:
       --listen-peer-urls http://0.0.0.0:2380
       --advertise-client-urls http://etcd2:2379
       --listen-client-urls http://0.0.0.0:2379
-      --discovery http://172.18.0.120:2379/v2/keys/discovery/0862bee6660dd49267de18311d662ca7
+      --discovery http://172.18.0.120:2379/v2/keys/discovery/dde7b72f340526cc6126effca6bcaf0c
